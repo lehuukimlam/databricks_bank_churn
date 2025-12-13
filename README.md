@@ -1,6 +1,7 @@
 # Bank Churn Analytics on Databricks  
 **Personal Project – Simulated Consulting Engagement**
 
+![Pipeline Architecture](assets/Project Flow.png)
 ---
 
 ## 1. Context & Objective
