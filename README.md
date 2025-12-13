@@ -1,7 +1,7 @@
 # Bank Churn Analytics on Databricks  
 **Personal Project – Simulated Consulting Engagement**
 
-![End-to-end Databricks Lakehouse Architecture](assets/Project Flow.png)
+![End-to-end Databricks Lakehouse Architecture](assets/Flow.png)
 
 ---
 
