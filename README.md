@@ -142,6 +142,8 @@ No outliers were removed or capped at this stage. All extreme values were delibe
 
 This exploratory work was performed using **ad-hoc SQL queries and manual inspection and is not included in automated pipelines or jobs.**
 
+---
+
 ### Lakehouse Design
 
 This project uses a **Bronze / Silver / Gold** Lakehouse pattern implemented natively in Databricks.
