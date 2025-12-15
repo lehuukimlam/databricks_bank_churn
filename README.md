@@ -59,6 +59,17 @@ The dataset simulates customer behavior, financial profiles, engagement, and chu
 
 The bank owner (simulated client) provides this dataset as CSV files on a shared drive, representing a common real-world scenario where data is not yet managed in a centralized database.
 
+## Limitations
+
+This analysis represents a **snapshot of the bank’s current customer base**.
+
+Due to the absence of historical or time-series data:
+- Trends over time cannot be evaluated
+- Churn dynamics are assessed only at the current state
+- Results should be interpreted as point-in-time indicators rather than longitudinal performance measures  
+
+Future availability of historical data would allow deeper churn trend analysis and cohort-based insights.
+
 ---
 
 ### Data Structure
@@ -221,59 +232,75 @@ Silver and Gold layers are refreshed only if data quality checks pass.
 
 This ensures that executive dashboards are never refreshed using invalid or structurally unsound data. Centralized, maintainable transformation logic
 
+**ETL Implementation Pipelines**
+
+- **Bronze layer**  
+  Ingested raw customer data is exposed as a Bronze view, preserving the original structure and values without transformation.
+
+- **Silver layer**  
+  Bronze data is cleaned and logically separated into:
+  - Customer private information (PII, governed for restricted access)
+  - Customer banking and behavioral information  
+  This layer standardises data types and prepares datasets for analytical use.
+
+- **Gold layer**  
+  Business-ready KPI datasets are created for dashboard consumption, including:
+  - Overall bank-level churn KPIs
+  - Churn KPIs grouped by customer segment  
+
+Dependencies between layers are automatically managed and visualised by Databricks Pipelines, ensuring clear lineage from raw data to business outputs.
+
 ---
 
 ## 7. Orchestration (Databricks Jobs)
 
 A Databricks **Job** orchestrates the full analytics workflow:
 
-Run the Data Quality checks pipeline
+- Run the Data Quality checks pipeline
 
-Evaluate the data quality result
+- Evaluate the data quality result
 
-Refresh the core Bronze → Silver → Gold transformation pipeline only if validation passes
+- Refresh the core Bronze → Silver → Gold transformation pipeline only if validation passes
 
-Refresh dashboards
+- Refresh dashboards
 
 This design enforces a clear separation between:
 
-Data validation (control layer)
+- Data validation (control layer)
 
-Transformation and analytics delivery
+- Transformation and analytics delivery
 
-Data ingestion via Fivetran is triggered manually to avoid exposing credentials in a public repository. The Job governs only internal analytics execution.
+- Data ingestion via Fivetran is triggered manually to avoid exposing credentials in a public repository. The Job governs only internal analytics execution.
 
 ---
 
-## 8. Value Delivered
+## 8. Business Insights & Value Delivered
 
-**Overall Bank Churn Dashboard**
+### Using data from the dashboards:
 
-Enables executives to:
+#### Overall Bank Churn Status
 
-- Understand the severity of churn across the entire portfolio
+- The bank is currently experiencing an approximate **18% churn rate**.  
+- Based on general industry benchmarks, this suggests the bank is **small to moderately affected by churn**, although external industry-average data would be required for precise benchmarking.
 
-- Monitor overall churn rate, customer volume, and balance exposure
+#### Churn by Customer Segment Dashboard
 
-- Assess risk, engagement, and loyalty characteristics at a high level
+Key observations include:
 
-**Churn by Customer Segment Dashboard**
+- The bank operates functionally with a **small proportion of high-loyalty customers**, who dominate balance exposure due to significantly higher deposits.  
+  Despite representing a small share of customers, this group contributes a disproportionate share of total balances (average balances are approximately **6× higher than the lowest segment**).
 
-Enables commercial and strategy teams to:
+- The **Mass customer segment** exhibits the **highest churn rate (approximately 40%)**.  
+  - This segment contributes only about **6% of total deposits**
+  - It shows the **highest average risk score (≈0.34)**
+  - It represents the **second-largest customer group**, accounting for roughly **27% of total customers**
 
-- Identify which customer segments are most affected by churn
+#### Business Implication
 
-- Compare balance contribution and churn risk across segments
-
-- Understand whether higher-value or higher-risk customers are disproportionately leaving
-
-Together, these dashboards provide:
-
-- A consistent, trusted view of churn
-
-- Clear segmentation-level insights
-
-- A foundation for informed discussion, prioritisation, and future analysis
+Given these patterns:
+- Churn risk is concentrated in lower-balance, higher-risk customer groups
+- Retention of high-value customers remains critical due to balance concentration
+- A more **new-user-friendly acquisition and retention strategy**—such as bundled products or preferential introductory rates—may help reduce churn in the Mass segment
 
 ---
 
