@@ -112,6 +112,23 @@ Once ingested, Databricks becomes the **single analytics platform**. Databricks 
 
 ---
 
+### Data Validation & Exploratory Review
+
+Because the client did not have an existing data capability, an initial exploratory data analysis (EDA) was conducted after ingestion into Databricks and before finalising transformation logic.
+
+**This exploratory review focused on:**
+
+- Basic distribution checks (counts by segment and key categorical fields)
+
+- Central tendency metrics (mean and median of balances, income, tenure, engagement, and risk scores)
+
+- Identification of potential outliers for further investigation
+
+**Important design decision:**
+No outliers were removed or capped at this stage. All extreme values were deliberately retained to support further analysis and future business discussion. This reflects a realistic consulting approach where anomalies are first understood before any data cleansing decisions are applied.
+
+This exploratory work was performed using **ad-hoc SQL queries and manual inspection and is not included in automated pipelines or jobs.**
+
 ### Lakehouse Design
 
 This project uses a **Bronze / Silver / Gold** Lakehouse pattern implemented natively in Databricks.
@@ -184,48 +201,79 @@ All KPI logic lives in the Gold layer. Dashboards do not compute metrics indepen
 
 ## 6. ETL Implementation (Databricks Pipelines)
 
-- All transformations are implemented using **Databricks Pipelines**
-- Each Bronze, Silver, and Gold dataset is defined as SQL inside the pipeline
-- Dependencies are automatically visualized (Bronze → Silver → Gold)
-- Pipelines materialize all table views end-to-end
+**Data Quality Checks Pipeline**
 
-This demonstrates:
-- Native Databricks ELT capabilities
-- Clear lineage and dependency management
-- Centralized, maintainable transformation logic
+In addition to transformation pipelines, a dedicated Data Quality (DQ) pipeline was established.
+
+This pipeline performs automated validation checks on the ingested dataset, including:
+
+- Null checks on critical identifiers
+
+- Duplicate customer ID detection
+
+- Non-negative validation for key numeric metrics
+
+The pipeline produces a data quality summary table with a pass/fail flag.
+**No records are modified or removed by this pipeline.**
+
+This DQ pipeline is executed as part of the Databricks Job workflow and acts as a gate:
+Silver and Gold layers are refreshed only if data quality checks pass.
+
+This ensures that executive dashboards are never refreshed using invalid or structurally unsound data. Centralized, maintainable transformation logic
 
 ---
 
 ## 7. Orchestration (Databricks Jobs)
 
-A simple Databricks **Job** is used to:
+A Databricks **Job** orchestrates the full analytics workflow:
 
-- Re-run the pipeline after data refresh
-- Refresh dashboards
+Run the Data Quality checks pipeline
 
-Data ingestion via Fivetran is triggered manually to avoid exposing credentials in a public repository. The Job focuses only on internal analytics refresh, which is appropriate for a portfolio project.
+Evaluate the data quality result
+
+Refresh the core Bronze → Silver → Gold transformation pipeline only if validation passes
+
+Refresh dashboards
+
+This design enforces a clear separation between:
+
+Data validation (control layer)
+
+Transformation and analytics delivery
+
+Data ingestion via Fivetran is triggered manually to avoid exposing credentials in a public repository. The Job governs only internal analytics execution.
 
 ---
 
 ## 8. Value Delivered
 
-### Deliverable 1 – Overall Churn Dashboard
-- Total customers
-- Churn rate
-- Average balance
-- Credit and risk indicators
-- Loyalty distribution
+**Overall Bank Churn Dashboard**
 
-### Deliverable 2 – Churn by Segment Dashboard
-- Churn rate by segment
-- Segment balance contribution
-- Credit score and risk comparison
-- Tenure and activity indicators
+Enables executives to:
 
-These dashboards provide:
-- Clear executive visibility
-- Consistent KPI definitions
-- A strong foundation for further analytics or AI exploration
+- Understand the severity of churn across the entire portfolio
+
+- Monitor overall churn rate, customer volume, and balance exposure
+
+- Assess risk, engagement, and loyalty characteristics at a high level
+
+**Churn by Customer Segment Dashboard**
+
+Enables commercial and strategy teams to:
+
+- Identify which customer segments are most affected by churn
+
+- Compare balance contribution and churn risk across segments
+
+- Understand whether higher-value or higher-risk customers are disproportionately leaving
+
+Together, these dashboards provide:
+
+- A consistent, trusted view of churn
+
+- Clear segmentation-level insights
+
+- A foundation for informed discussion, prioritisation, and future analysis
 
 ---
 
