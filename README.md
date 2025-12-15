@@ -59,6 +59,8 @@ The dataset simulates customer behavior, financial profiles, engagement, and chu
 
 The bank owner (simulated client) provides this dataset as CSV files on a shared drive, representing a common real-world scenario where data is not yet managed in a centralized database.
 
+---
+
 ## Limitations
 
 This analysis represents a **snapshot of the bank’s current customer base**.
