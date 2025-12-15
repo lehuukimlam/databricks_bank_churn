@@ -232,6 +232,8 @@ Silver and Gold layers are refreshed only if data quality checks pass.
 
 This ensures that executive dashboards are never refreshed using invalid or structurally unsound data. Centralized, maintainable transformation logic
 
+---
+
 **ETL Implementation Pipelines**
 
 - **Bronze layer**  
