@@ -112,7 +112,7 @@ Once ingested, Databricks becomes the **single analytics platform**. Databricks 
 
 ---
 
-### Data Validation & Exploratory Review
+### Data Validation & Exploratory Review (EDA)
 
 Because the client did not have an existing data capability, an initial exploratory data analysis (EDA) was conducted after ingestion into Databricks and before finalising transformation logic.
 
